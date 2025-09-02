@@ -21,7 +21,10 @@ body:
         Replace the <issue_type> placeholder from the title using a Conventional Commit-style prefix (e.g., `fix`, `feat`, `chore`, `refactor`).
     validations:
       required: true
-
+name: "Gateway Contracts Issue"
+description: File any issue related to the gateway-contracts component
+title: "<issue_type>(gateway-contracts): short description"
+labels: ["gateway-contracts"]
   - type: textarea
     id: context
     attributes:
