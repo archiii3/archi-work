@@ -32,8 +32,8 @@ labels: ["gateway-contracts"]
       label: Context
       description: Any additional information, context, or links that help understand the issue
     validations:
-      required: false
- about: Ask in the Zama community forum
+      r  url: https://community.zama.ai
+    about: Ask in the Zama community forum
 @@ -0,0 +1,31 @@
 name: "Gateway Contracts Issue"
   - type: textarea
