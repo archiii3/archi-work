@@ -11,7 +11,9 @@ description: File any issue related to the gateway-contracts component
 title: "<issue_type>(gateway-contracts): short description"
 labels: ["gateway-contracts"]
 projects: ["zama-ai/31"] # fhevm project
-body:
+body: url: https://community.zama.ai
+    about: Ask in the Zama community forum
+@@ -0,0 +1,31 @@
   --  about: Ask in the Zama community forum
 @@ -0,0 +1,31 @@
 name: "Gateway Contracts Issue"upport Requests
