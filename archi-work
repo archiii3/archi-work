@@ -36,7 +36,10 @@ labels: ["gateway-contracts"]
       label: Context
       description: Any additional information, context, or links that help understand the issue
     validations:
-      r  url: https://community.zama.ai
+     contact_links:
+  - name: Questions & Support Requests
+    url: https://community.zama.ai
+    about: Ask in the Zama community forum
     about: Ask in the Zama community forum
 name: "Gateway Contracts Issue"
 description: File any issue related to the gateway-contracts component
