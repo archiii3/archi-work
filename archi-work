@@ -34,9 +34,10 @@ labels: ["gateway-contracts"]
     id: context
     attributes:
       label: Context
-      description: Any additional information, context, or links that help understand the issue
-    validations:
-     contact_links:
+      - name: Questions & Support Requests
+    url: https://community.zama.ai
+    about: Ask in the Zama community forum
+@@ -0,0 +1,31 @@s:
   - name: Questions & Support Requests
     url: https://community.zama.ai
     about: Ask in the Zama community forum
