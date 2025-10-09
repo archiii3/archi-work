@@ -23,8 +23,8 @@ name: "Gateway Contracts Issue"upport Requests
     about: Ask in the Zama community forum
 @@ -0,0 +1,31 @@
       label: Describe the issue
-      description: |
-        Please describe the issue in detail.
+      blank_issues_enabled: false
+contact_links:.
         Replace the <issue_type> placeholder from the title using a Conventional Commit-style prefix (e.g., `fix`, `feat`, `chore`, `refactor`).
     validations:
       required: true
