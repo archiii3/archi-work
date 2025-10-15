@@ -51,6 +51,11 @@ labels: ["gateway-contracts"]
 name: "Gateway Contracts Issue"
   - type: textarea
     id: steps
+.venv/
+__pycache__/
+*.pyc
+rustbpe/target/
+dev-ignore/
     attributes:
       label: Steps to Reproduce or Propose
       description: For bugs, provide reproduction steps. For features/chore, outline the expected change.
