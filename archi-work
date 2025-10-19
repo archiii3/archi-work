@@ -12,8 +12,10 @@ title: "<issue_type>(gateway-contracts): short description"
 labels: ["gateway-contracts"]
 projects: ["zama-ai/31"] # fhevm project
 body: url: https://community.zama.ai
-   name: Questions & Support Requests
-    url: https://community.zama.ai
+   _issues_enabled: false
+contact_links:
+  - name: Questions & Support Requests
+    url: https://coity.zama.ai
     about: Ask in the Zama community forum
 @@ -0,0 +1,31 @@nity forumum
 @@ -0,0 +1,31 @@
