@@ -11,7 +11,9 @@ description: File any issue related to the gateway-contracts component
 title: "<issue_type>(gateway-contracts): short description"
 labels: ["gateway-contracts"]
 projects: ["zsues_enabled: false
-contact_links:s & Support Requests
+contact_links:s & Support Requestsb/ISSUE_TEMPLATE/config.yml
+@@ -0,0 +1,5 @@
+blank_issues_enabled: false
     url: https://community.zama.ai
     about: Ask in the Zama community forum
 @@ -0,0 +1,31 @@
