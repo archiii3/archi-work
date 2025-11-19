@@ -1,0 +1,169 @@
+# Car-Accel-Sim
+
+A small, safe Python simulation that models a car revving and accelerating (throttle input → RPM → speed).  
+Useful for learning, demos, or embedding in educational projects.
+
+## Features
+- Simple physics-like model linking throttle percentage to engine RPM and vehicle speed
+- Supports gears, clutch state (simplified), and basic acceleration/braking
+- Command-line demo to show the car revving and accelerating over time
+
+## Files
+- `car.py` — core `Car` class (simulation logic)
+- `main.py` — demo CLI that runs a scenario and prints state each step
+- `requirements.txt` — none required (pure Python)
+
+## How to run
+1. Make sure you have Python 3.8+ installed.
+2. Clone or download this repository.
+3. Run the demo:
+```bash
+python main.py
+Time 0.0s — Throttle: 0% — RPM: 800 — Speed: 0.0 km/h — Gear: N
+Time 0.5s — Throttle: 60% — RPM: 2200 — Speed: 3.4 km/h — Gear: 1
+...
+
+---
+
+# car.py
+```python
+# car.py
+from dataclasses import dataclass, field
+
+@dataclass
+class Car:
+    # vehicle parameters
+    mass_kg: float = 1200.0            # vehicle mass
+    wheel_radius_m: float = 0.34      # effective wheel radius
+    drivetrain_efficiency: float = 0.85
+    idle_rpm: float = 800.0
+    redline_rpm: float = 6500.0
+    gear_ratios: list = field(default_factory=lambda: [0.0, 3.8, 2.2, 1.5, 1.0, 0.8])  # 0 = neutral
+    final_drive: float = 3.4
+
+    # dynamic state
+    rpm: float = 800.0
+    speed_kmh: float = 0.0
+    throttle: float = 0.0        # 0.0 - 1.0
+    gear: int = 0                # 0 = neutral, 1..n = gears
+    clutch_engaged: bool = True  # simplified: True means power to wheels
+
+    # internal tuning
+    max_engine_torque_nm: float = 300.0  # peak torque at mid-range
+    air_resistance_coeff: float = 0.3    # rough drag coefficient * area factor
+    rolling_resistance_coeff: float = 30.0  # N per m/s approx
+
+    def update(self, dt: float):
+        """
+        Advance the simulation by dt seconds.
+        - throttle: 0.0..1.0
+        - update rpm based on throttle and load
+        - compute wheel torque if in gear and clutch engaged
+        - update speed (m/s) then convert to km/h
+        """
+        # --- engine RPM behavior (very simplified)
+        target_rpm = self.idle_rpm + (self.redline_rpm - self.idle_rpm) * self.throttle
+        # RPM moves toward target with some inertia
+        rpm_change_rate = 2000.0  # rpm change per second at full difference
+        rpm_delta = (target_rpm - self.rpm) * min(1.0, dt * rpm_change_rate / max(1.0, abs(target_rpm - self.rpm)))
+        self.rpm += rpm_delta
+
+        # ensure rpm bounds
+        if self.rpm < self.idle_rpm:
+            self.rpm = self.idle_rpm
+        if self.rpm > self.redline_rpm * 1.05:
+            self.rpm = self.redline_rpm * 1.05
+
+        # --- engine torque (simplified torque curve)
+        # torque curve: peak at around 3000 rpm, drop off at high rpm
+        rpm_ratio = self.rpm / 3000.0
+        torque = self.max_engine_torque_nm * (1.0 - 0.5 * (rpm_ratio - 1.0)**2)  # parabola-ish
+        torque = max(0.0, torque)  # no negative torque here
+        torque *= self.throttle  # throttle scales available torque
+
+        # --- torque to wheels
+        wheel_torque = 0.0
+        if self.gear > 0 and self.clutch_engaged:
+            gear_ratio = self.gear_ratios[min(self.gear, len(self.gear_ratios)-1)]
+            total_ratio = gear_ratio * self.final_drive
+            wheel_torque = torque * total_ratio * self.drivetrain_efficiency
+        else:
+            # in neutral or clutch disengaged, engine torque doesn't reach wheels
+            wheel_torque = 0.0
+
+        # convert wheel torque to force at wheel perimeter
+        wheel_force = wheel_torque / self.wheel_radius_m  # Newtons
+
+        # --- resistive forces
+        # approximate speed in m/s
+        speed_ms = self.speed_kmh / 3.6
+        aerodynamic_drag = self.air_resistance_coeff * speed_ms * speed_ms
+        rolling_resistance = self.rolling_resistance_coeff * speed_ms
+        resistive_force = aerodynamic_drag + rolling_resistance
+
+        # net force
+        net_force = wheel_force - resistive_force
+
+        # acceleration = F / m
+        acceleration = net_force / self.mass_kg
+
+        # integrate speed
+        speed_ms += acceleration * dt
+        if speed_ms < 0:
+            speed_ms = 0.0
+
+        self.speed_kmh = speed_ms * 3.6
+
+        # small coupling: if speed and gear set rpm (to avoid unrealistic rpm)
+        if self.gear > 0 and self.clutch_engaged:
+            gear_ratio = self.gear_ratios[min(self.gear, len(self.gear_ratios)-1)]
+            wheel_rot_per_sec = speed_ms / (2 * 3.14159265 * self.wheel_radius_m)
+            engine_rps = wheel_rot_per_sec * gear_ratio * self.final_drive
+            engine_rpm_from_wheels = engine_rps * 60.0
+            # blend rpm toward wheel-driven rpm when throttle is low
+            if self.throttle < 0.2:
+                blend = 0.7
+                self.rpm = self.rpm * (1 - blend) + engine_rpm_from_wheels * blend
+            # avoid stalling below idle
+# main.py
+import time
+from car import Car
+
+def demo_scenario():
+    car = Car()
+    dt = 0.5  # seconds per step
+    steps = 30
+
+    # Start: engine idle, neutral
+    print(f"Time {0.0:.1f}s — Throttle: {car.throttle*100:.0f}% — RPM: {car.rpm:.0f} — Speed: {car.speed_kmh:.1f} km/h — Gear: {car.gear}")
+    
+    for i in range(1, steps+1):
+        t = i * dt
+
+        # simple staged inputs:
+        # 0-2s: press throttle to 60% and engage 1st gear
+        if t > 0.0 and t <= 2.5:
+            car.set_throttle_percent(60)
+            car.shift_to(1)
+            car.clutch_engaged = True
+        # 2.5-6s: keep throttle high to accelerate
+        elif t <= 6.0:
+            car.set_throttle_percent(80)
+            car.shift_to(2 if t > 3.0 else 1)
+        # 6-12s: reduce throttle a bit, move to higher gears
+        elif t <= 12.0:
+            car.set_throttle_percent(50)
+            car.shift_to(3 if t > 8 else 2)
+        # after 12s: throttle to 0 (coast)
+        else:
+            car.set_throttle_percent(0)
+
+        car.update(dt)
+
+        print(f"Time {t:.1f}s — Throttle: {car.throttle*100:.0f}% — RPM: {car.rpm:.0f} — Speed: {car.speed_kmh:.1f} km/h — Gear: {car.gear}")
+
+        # optional: slow the loop for demo effect
+        # time.sleep(dt)
+
+if __name__ == "__main__":
+# No external dependencies — plain Python 3.8+
