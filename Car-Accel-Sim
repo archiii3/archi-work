@@ -40,6 +40,7 @@ class Car:
     redline_rpm: float = 6500.0
     gear_ratios: list = field(default_factory=lambda: [0.0, 3.8, 2.2, 1.5, 1.0, 0.8])  # 0 = neutral
     final_drive: float = 3.4
+- Simple physics-like model linking throttle percentage to engine RPM and vehicle speed
 
     # dynamic state
     rpm: float = 800.0
