@@ -68,7 +68,8 @@ class Car:
         rpm_change_rate = 2000.0  # rpm change per second at full difference
         rpm_delta = (target_rpm - self.rpm) * min(1.0, dt * rpm_change_rate / max(1.0, abs(target_rpm - self.rpm)))
         self.rpm += rpm_delta
-
+ Simple physics-like model linking throttle percentage to engine RPM and vehicle speed
+- Supports gears, clutch state (simplified), and basic acceleration/braking
         # ensure rpm bounds
         if self.rpm < self.idle_rpm:
             self.rpm = self.idle_rpm
