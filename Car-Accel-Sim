@@ -160,6 +160,10 @@ def demo_scenario():
         else:
             car.set_throttle_percent(0)
 
+## Files
+- `car.py` — core `Car` class (simulation logic)
+- `main.py` — demo CLI that runs a scenario and prints state each step
+- `requirements.txt` — none required (pure Python)
         car.update(dt)
 
         print(f"Time {t:.1f}s — Throttle: {car.throttle*100:.0f}% — RPM: {car.rpm:.0f} — Speed: {car.speed_kmh:.1f} km/h — Gear: {car.gear}")
