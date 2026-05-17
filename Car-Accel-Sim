@@ -89,6 +89,8 @@ class Car:
             gear_ratio = self.gear_ratios[min(self.gear, len(self.gear_ratios)-1)]
             total_ratio = gear_ratio * self.final_drive
             wheel_torque = torque * total_ratio * self.drivetrain_efficiency
+            gear_ratio = self.gear_ratios[min(self.gear, len(self.gear_ratios)-1)]
+            total_ratio = gear_ratio * self.final_drive
         else:
             # in neutral or clutch disengaged, engine torque doesn't reach wheels
             wheel_torque = 0.0
